@@ -1,0 +1,385 @@
+═══════════════════════════════════════════════════════════════════════════════
+    RECLAIM LEVELS INDICATOR - INSTALLATION INSTRUCTIONS FOR NINJATRADER 8
+═══════════════════════════════════════════════════════════════════════════════
+
+This document provides step-by-step instructions for installing and using the
+Reclaim Levels Indicator in NinjaTrader 8. These instructions are written for
+users with basic experience in NinjaTrader.
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 1: IMPORTING THE INDICATOR INTO NINJATRADER
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: LOCATE THE CODE FILE
+─────────────────────────────
+1. Find the file named "ReclaimLevelsIndicator.cs" that was provided to you
+2. This file should be on your Desktop or in your Downloads folder
+3. Take note of where this file is located - you'll need it in the next steps
+
+STEP 2: OPEN NINJASCRIPT EDITOR
+─────────────────────────────────
+1. Open NinjaTrader 8 on your computer
+2. At the top menu bar, click on "Tools"
+3. In the dropdown menu, click on "Edit NinjaScript"
+4. A new window called "NinjaScript Editor" will open
+
+STEP 3: CREATE A NEW INDICATOR
+────────────────────────────────
+1. In the NinjaScript Editor window, look at the left side panel
+2. You'll see a folder tree. Find and expand the folder called "Indicators"
+   (Click the small arrow or plus sign next to it)
+3. Right-click on the "Indicators" folder
+4. In the menu that appears, hover over "New"
+5. Click on "Blank Indicator..."
+6. A "New Indicator" dialog box will appear
+
+STEP 4: NAME YOUR INDICATOR
+─────────────────────────────
+1. In the "Name" field, type: ReclaimLevelsIndicator
+   (Make sure to type it exactly as shown, with no spaces)
+2. Click the "OK" button at the bottom of the dialog box
+3. A new code window will open with some default code in it
+
+STEP 5: REPLACE THE DEFAULT CODE
+──────────────────────────────────
+1. In the new code window that just opened, press Ctrl+A on your keyboard
+   (This selects all the default code)
+2. Press Delete or Backspace to remove all the default code
+3. Now open the "ReclaimLevelsIndicator.cs" file you located in Step 1:
+   - Right-click on the file
+   - Select "Open With" > "Notepad" (or any text editor)
+4. In the Notepad window, press Ctrl+A to select all the code
+5. Press Ctrl+C to copy the code
+6. Go back to the NinjaScript Editor window
+7. Click in the empty code area
+8. Press Ctrl+V to paste the code
+
+STEP 6: COMPILE THE INDICATOR
+───────────────────────────────
+1. Look at the top toolbar of the NinjaScript Editor
+2. Click the button that says "Compile" (or press F5 on your keyboard)
+3. Wait a few seconds while NinjaTrader compiles the code
+4. At the bottom of the window, you'll see an "Output" panel
+5. Look for the message: "Compiled successfully with 0 errors"
+   
+   If you see ANY errors:
+   - Make sure you copied ALL the code from the .cs file
+   - Make sure you deleted ALL the default code before pasting
+   - Try the copy/paste process again from Step 5
+   
+6. Once compilation is successful, you can close the NinjaScript Editor
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 2: ADDING THE INDICATOR TO YOUR CHART
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 7: OPEN A CHART
+─────────────────────
+1. In the main NinjaTrader window, look at the top toolbar
+2. Click on "New" 
+3. In the dropdown menu, click "Chart"
+4. A new chart window will open (it will default to whatever instrument)
+
+STEP 8: CHANGE TO ES OR MES
+─────────────────────────────
+1. In the chart window, look at the top-left where it shows the instrument name
+2. Click on the instrument name dropdown
+3. Type "ES" or "MES" (depending on which you want to trade)
+4. Select the appropriate contract month from the list that appears
+   (Usually the current or next month's contract)
+
+STEP 9: ADD THE INDICATOR TO YOUR CHART
+─────────────────────────────────────────
+1. On the chart window, right-click anywhere in the chart area
+2. In the menu that appears, hover over "Indicators"
+3. A second menu will appear on the right side
+4. Scroll down in this menu until you find "ReclaimLevelsIndicator"
+   (Indicators are listed in alphabetical order)
+5. Click on "ReclaimLevelsIndicator"
+6. The indicator properties window will open
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 3: CONFIGURING THE INDICATOR SETTINGS
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 10: ENTER YOUR DAILY VALUES
+──────────────────────────────────
+The indicator properties window has several sections. You need to enter your
+daily values in each section:
+
+SECTION 1: RECLAIM LEVELS
+──────────────────────────
+1. Find the section labeled "1. Reclaim Levels"
+2. Enter your three reclaim level prices:
+   - Reclaim Level 1: Enter your first price (e.g., 7057)
+   - Reclaim Level 2: Enter your second price (e.g., 7061)
+   - Reclaim Level 3: Enter your third price (e.g., 7069)
+   
+   Note: If you only have 1 or 2 levels, you can leave the others as 0
+
+SECTION 2: MAJOR SUPPORT LEVELS
+─────────────────────────────────
+1. Find the section labeled "2. Major Support Levels"
+2. Enter your three major support prices:
+   - Major Support 1: Enter your first price (e.g., 6855)
+   - Major Support 2: Enter your second price (e.g., 6859)
+   - Major Support 3: Enter your third price (e.g., 6866)
+   
+   Note: If you only have 1 or 2 levels, you can leave the others as 0
+
+SECTION 3: HISTORICAL LOWS
+───────────────────────────
+1. Find the section labeled "3. Historical Lows"
+2. Enter the low prices:
+   - Low of Yesterday: Enter yesterday's low (e.g., 6835)
+   - Low of 2 Days Ago: Enter the low from 2 days ago (e.g., 6825)
+
+SECTION 4: TRADING PARAMETERS
+───────────────────────────────
+1. Find the section labeled "4. Trading Parameters"
+2. Set these values according to your trading rules:
+   
+   - Points Above (Ticks): How many ticks price must move below the level
+     * Default is 8 ticks (which equals 2 points on ES/MES)
+     * For ES/MES: 4 ticks = 1 point, so 8 ticks = 2 points
+   
+   - Held Above Time (Seconds): How long price must stay above the level
+     * Default is 270 seconds (which equals 4 minutes and 30 seconds)
+     * To change: multiply minutes by 60 and add seconds
+     * Example: 5 minutes = 300 seconds, 3 min 45 sec = 225 seconds
+   
+   - Stop Down (Ticks): Your stop loss in ticks
+     * Default is 40 ticks (which equals 10 points on ES/MES)
+     * Adjust based on your risk management
+
+STEP 11: APPLY THE SETTINGS
+─────────────────────────────
+1. After entering all your values, click the "OK" button at the bottom
+2. The indicator will now appear on your chart with your settings
+3. You should see:
+   - Gold horizontal lines for your Reclaim Levels
+   - Green horizontal lines for your Major Support Levels
+   - Red line for Yesterday's Low
+   - Orange-Red line for Low of 2 Days Ago
+   - Text labels next to each line
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 4: USING THE INDICATOR IN LIVE TRADING OR PLAYBACK
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 12: SWITCH TO LIVE OR PLAYBACK MODE
+──────────────────────────────────────────
+
+FOR LIVE TRADING (Real Market or Simulation):
+1. Your chart should already be in live mode by default
+2. Look at the top of the chart - if you see "Market Replay" you're in playback
+3. To switch to live, right-click the chart and select "Chart" > "Connect to Live"
+
+FOR BACKTESTING WITH MARKET REPLAY (Playback):
+1. At the top menu bar, click "Tools"
+2. Select "Playback Connection"
+3. The Playback101 controller window will open
+4. Click "Connect" to activate playback mode
+5. Use the controller to select a date and start playing market data
+6. The indicator will process the historical data as if it were live
+
+STEP 13: UNDERSTANDING THE INDICATOR SIGNALS
+──────────────────────────────────────────────
+
+The indicator will automatically display text signals as market conditions change:
+
+SIGNAL 1: "CROSSED 2 pts BELOW"
+  - This appears when price drops 2 points (or your set value) below a Major
+    Support Level
+  - This is the first condition being met
+  - Color: White text with slate gray background
+  - Location: Appears to the left of the current bar
+
+SIGNAL 2: "RECLAIMED LEVEL"
+  - This appears when price crosses back above the same Major Support Level
+  - A timer starts counting from 0 seconds
+  - The timer appears on the chart showing elapsed time (HH:MM:SS)
+  - Color: White text with slate gray background
+  - Location: Appears to the left of the current bar
+
+SIGNAL 3: Timer Display
+  - Shows "Timer: 00:00:00" format
+  - Counts up in real-time while price stays above the level
+  - If price drops back below the level, timer resets and disappears
+  - Color: Yellow text with black background
+
+SIGNAL 4: "ENTER THE TRADE"
+  - This appears when price has held above the level for your set time
+  - This is your entry signal to take the trade
+  - The timer disappears when this signal shows
+  - Color: White text with dark slate gray background
+  - Location: Appears to the left of the current bar
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 5: CHANGING SETTINGS AFTER INSTALLATION
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 14: EDITING INDICATOR SETTINGS (Daily Updates)
+────────────────────────────────────────────────────
+Each trading day, you'll need to update your price levels:
+
+1. Right-click anywhere on the chart
+2. Hover over "Indicators"
+3. Find "ReclaimLevelsIndicator" in the list
+4. Click on it to open the properties window
+5. Update your daily values in each section
+6. Click "OK" to apply the changes
+7. The chart will refresh with your new levels
+
+QUICK TIP FOR DAILY UPDATES:
+- Keep a notepad or spreadsheet with your daily values ready
+- Update the indicator first thing each morning before market open
+- Double-check all values before clicking OK
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 6: TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+PROBLEM: The indicator doesn't appear on the chart
+SOLUTION:
+- Make sure compilation was successful (no errors in Step 6)
+- Try closing and reopening the chart
+- Try restarting NinjaTrader
+- Re-compile the indicator (open NinjaScript Editor, find the indicator, click Compile)
+
+PROBLEM: The lines appear but in wrong locations
+SOLUTION:
+- Right-click chart > Indicators > ReclaimLevelsIndicator
+- Double-check all your price values
+- Make sure you're entering prices, not ticks
+- Verify you're on the correct instrument (ES or MES)
+
+PROBLEM: No signals appear on the chart
+SOLUTION:
+- Make sure your chart is in "Calculate on bar close" mode
+- Verify that price has actually met the conditions
+- Check the Output window for any error messages:
+  * Tools > Output Window (or press Ctrl+I)
+- Make sure all Trading Parameters are set correctly
+
+PROBLEM: Timer doesn't appear
+SOLUTION:
+- The timer only appears after price reclaims a level
+- Make sure price has crossed below AND back above a Major Support
+- Check that your time parameter is greater than 0
+
+PROBLEM: Colors don't match the specifications
+SOLUTION:
+- The colors are hard-coded in the indicator
+- If you want different colors, you would need to edit the code
+- This would require changing values in the NinjaScript Editor
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 7: TIPS FOR BEST RESULTS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. DAILY PREPARATION
+   - Update your levels every morning before market open
+   - Keep a trading journal with your daily levels for reference
+   - Test on Playback first before using in live trading
+
+2. CHART SETUP
+   - Use a clean chart with minimal other indicators to avoid clutter
+   - Zoom the chart to see several hours of price action
+   - Make sure text is readable by adjusting chart zoom level
+
+3. MONITORING THE INDICATOR
+   - Watch for the "CROSSED 2 pts BELOW" signal first
+   - Pay attention to the timer when it appears
+   - Be ready to enter when "ENTER THE TRADE" appears
+
+4. RISK MANAGEMENT
+   - Always use the Stop Down parameter for your stop loss
+   - Don't override the indicator's signals based on emotions
+   - Keep position sizing consistent with your risk management plan
+
+5. PRACTICE MODE
+   - Use Simulation account or Market Replay to practice first
+   - Get comfortable with how signals appear and timing
+   - Verify the indicator works correctly with your data feed
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 8: ADDITIONAL INFORMATION
+═══════════════════════════════════════════════════════════════════════════════
+
+WHAT THE INDICATOR DOES:
+This indicator helps you identify and trade "reclaim" setups on ES or MES futures.
+It plots important support levels and automatically monitors when price:
+1. Drops below a major support level by a specified amount
+2. Crosses back above (reclaims) that level
+3. Holds above that level for a specified time period
+4. Generates an entry signal when conditions are met
+
+UNDERSTANDING TICKS VS POINTS:
+- ES and MES move in ticks (smallest price increments)
+- ES: 1 tick = 0.25 points, so 4 ticks = 1 point
+- MES: Same tick size as ES (0.25)
+- The indicator uses TICKS for calculations, so:
+  * 8 ticks = 2 points (default setting)
+  * 40 ticks = 10 points (default stop)
+
+CALCULATION MODE:
+- The indicator uses "Calculate on Bar Close"
+- This means signals appear when a bar closes, not during the bar
+- This prevents false signals but creates a slight delay
+- For more responsive signals, this can be changed in the code
+
+IMPORTANT NOTES:
+- This indicator is designed specifically for ES and MES contracts
+- It can be used on other instruments but tick values may differ
+- Always test in Simulation or Playback before live trading
+- Past performance does not guarantee future results
+
+═══════════════════════════════════════════════════════════════════════════════
+SUPPORT AND MODIFICATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+If you need to modify the indicator (colors, sizes, additional levels, etc.),
+you would need to:
+1. Open the NinjaScript Editor (Tools > Edit NinjaScript)
+2. Navigate to Indicators > ReclaimLevelsIndicator
+3. Make your changes in the code
+4. Click Compile (F5)
+5. Close and reopen your chart
+
+The code is heavily commented to help you understand what each section does.
+Look for comments starting with // or /* */ to understand the code logic.
+
+═══════════════════════════════════════════════════════════════════════════════
+SUMMARY CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+Installation:
+□ Located the ReclaimLevelsIndicator.cs file
+□ Opened NinjaScript Editor (Tools > Edit NinjaScript)
+□ Created new blank indicator named "ReclaimLevelsIndicator"
+□ Pasted the code from the .cs file
+□ Compiled successfully with 0 errors
+□ Closed NinjaScript Editor
+
+Chart Setup:
+□ Opened a new chart
+□ Changed instrument to ES or MES
+□ Added ReclaimLevelsIndicator from the Indicators menu
+□ Entered all daily values (Reclaim Levels, Major Support, Historical Lows)
+□ Set Trading Parameters (Points Above, Held Above Time, Stop Down)
+□ Clicked OK to apply
+
+Ready to Trade:
+□ Connected to Live or Playback mode
+□ All lines and labels visible on chart
+□ Monitoring for signals to appear
+□ Risk management plan in place
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Congratulations! Your Reclaim Levels Indicator is now installed and ready to use.
+
+Happy Trading!
+
+═══════════════════════════════════════════════════════════════════════════════
