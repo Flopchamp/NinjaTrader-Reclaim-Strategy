@@ -323,9 +323,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 			// Price is above the level
 			if (!isTimerRunning)
 			{
-			// Start the timer - use bar time initially for consistency
+			// Start the timer - use appropriate time source based on state
 			isTimerRunning = true;
-			timerStartTime = Time[0];
+			// CRITICAL FIX: Use DateTime.Now for live trading, Time[0] for historical/playback
+			timerStartTime = (State == State.Realtime) ? DateTime.Now : Time[0];
 			hasReclaimedLevel = true;
 			lastTimerSecond = -1; // Reset timer display throttle				// Update text to show "RECLAIMED LEVEL"
 				DrawReclaimedLevelText();
