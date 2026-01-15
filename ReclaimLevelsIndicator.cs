@@ -36,11 +36,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 		// Variables to track trading logic state
 		private double currentMajSupportLevel = 0; // The MAJ SUPPORT level we're tracking
 		private bool hasCrossedBelowByPoints = false; // Track if condition #1 is met
-		private DateTime timerStartTime = DateTime.MinValue; // When timer started (using real-time clock)
+		private DateTime timerStartTime = DateTime.MinValue; // When timer started
 		private bool isTimerRunning = false; // Is the timer currently running
 		private bool hasReclaimedLevel = false; // Track if level was reclaimed
 		private bool hasEnteredTrade = false; // Track if trade entry signal was shown
-		private double previousClose = 0; // Track previous bar close for crossing detection
+		private int lastProcessedBar = -1; // Track last bar processed to prevent duplicate triggers on same bar
+		private int lastTimerSecond = -1; // Track last displayed timer second to throttle updates
 		
 		// Drawing object tags for management
 		private string crossedBelowTag = "";
@@ -117,10 +118,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 		// Get current price (Close of current bar)
 		double lastPrice = Close[0];
 		
-		// Store previous close for next bar's crossing detection
-		if (CurrentBar > 0)
-			previousClose = Close[0];
-		
 		// Main trading logic
 		ProcessTradingLogic(lastPrice);
 	}
@@ -191,9 +188,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 	private void DrawCrossedBelowText()
 	{
 		crossedBelowTag = "CrossedBelow_" + CurrentBar;
-		// CRITICAL FIX: Position text to the LEFT of current bar (negative bars ago value)
+		// Place text on current bar at specified Y position
 		Draw.Text(this, crossedBelowTag, false, "CROSSED 2 pts BELOW", 
-			-5, High[0] + (5 * TickSize), 0, Brushes.White, 
+			0, High[0] + (5 * TickSize), 0, Brushes.White, 
 			new SimpleFont("Montserrat", 20) { Bold = false }, 
 			TextAlignment.Left, Brushes.SlateGray, Brushes.SlateGray, 95);
 	}
@@ -208,9 +205,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 			RemoveDrawObject(crossedBelowTag);
 		
 		reclaimedTag = "Reclaimed_" + CurrentBar;
-		// CRITICAL FIX: Position text to the LEFT of current bar (negative bars ago value)
+		// Place text on current bar at specified Y position
 		Draw.Text(this, reclaimedTag, false, "RECLAIMED LEVEL", 
-			-5, High[0] + (5 * TickSize), 0, Brushes.White, 
+			0, High[0] + (5 * TickSize), 0, Brushes.White, 
 			new SimpleFont("Montserrat", 20) { Bold = false }, 
 			TextAlignment.Left, Brushes.SlateGray, Brushes.SlateGray, 95);
 	}
@@ -242,11 +239,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 		double stopLossPrice = currentMajSupportLevel - (StopDownTicks * TickSize);
 		
 		enterTradeTag = "EnterTrade_" + CurrentBar;
-		// CRITICAL FIX: Include stop loss price in the trade entry text
-		string tradeText = string.Format("**ENTER THE TRADE**\nStop Loss: {0:F2}", stopLossPrice);
+		// Remove markdown formatting - NinjaTrader renders plain text, Bold is set via font property
+		string tradeText = string.Format("ENTER THE TRADE\nStop Loss: {0:F2}", stopLossPrice);
 		
 		Draw.Text(this, enterTradeTag, false, tradeText, 
-			-5, High[0] + (5 * TickSize), 0, Brushes.White, 
+			0, High[0] + (5 * TickSize), 0, Brushes.White, 
 			new SimpleFont("Montserrat", 20) { Bold = true }, 
 			TextAlignment.Left, Brushes.DarkSlateGray, Brushes.DarkSlateGray, 95);
 		
@@ -289,18 +286,23 @@ namespace NinjaTrader.NinjaScript.Indicators
 	/// </summary>
 	private void CheckCondition1_CrossedBelow(double lastPrice, double pointsAbove)
 	{
+		// Prevent duplicate detection on same bar when using OnEachTick
+		if (lastProcessedBar == CurrentBar)
+			return;
+		
 		// Loop through MAJ SUPPORT levels from highest to lowest
 		for (int i = 0; i < majSupportLevels.Count; i++)
 		{
 			double majSupport = majSupportLevels[i];
 			
-			// CRITICAL FIX: Check if price actually CROSSED below (was above, now reached below by required points)
+			// Check if price actually CROSSED below (was above, now reached below by required points)
 			// Previous close must be >= level AND current Low must reach at least 2pts below
 			if (CurrentBar > 0 && Close[1] >= majSupport && Low[0] <= (majSupport - pointsAbove))
 			{
 				// Condition #1 is met!
 				hasCrossedBelowByPoints = true;
 				currentMajSupportLevel = majSupport;
+				lastProcessedBar = CurrentBar; // Mark this bar as processed
 				
 				// Draw "CROSSED 2 pts BELOW" text
 				DrawCrossedBelowText();
@@ -321,24 +323,42 @@ namespace NinjaTrader.NinjaScript.Indicators
 			// Price is above the level
 			if (!isTimerRunning)
 			{
-				// Start the timer using real-time clock
-				isTimerRunning = true;
-				timerStartTime = DateTime.Now;  // CRITICAL FIX: Use DateTime.Now for real-time timer
-				hasReclaimedLevel = true;
-				
-				// Update text to show "RECLAIMED LEVEL"
+			// Start the timer - use appropriate time source based on state
+			isTimerRunning = true;
+			// CRITICAL FIX: Use DateTime.Now for live trading, Time[0] for historical/playback
+			timerStartTime = (State == State.Realtime) ? DateTime.Now : Time[0];
+			hasReclaimedLevel = true;
+			lastTimerSecond = -1; // Reset timer display throttle				// Update text to show "RECLAIMED LEVEL"
 				DrawReclaimedLevelText();
 				
 				Print(Time[0] + " - Timer Started: Price reclaimed MAJ SUPPORT " + currentMajSupportLevel);
 			}
 			else
 			{
-				// Timer is running, check elapsed time using real-time clock
-				TimeSpan elapsed = DateTime.Now - timerStartTime;  // CRITICAL FIX: Use DateTime.Now
+				// Timer is running, calculate elapsed time
+				// Use bar time (Time[0]) for historical compatibility and State.Realtime for live
+				TimeSpan elapsed;
+				if (State == State.Realtime)
+				{
+					// Live trading: use DateTime.Now for real-time countdown
+					elapsed = DateTime.Now - timerStartTime;
+				}
+				else
+				{
+					// Historical/Playback: use bar time
+					elapsed = Time[0] - timerStartTime;
+				}
 				
-				// Show timer on chart
-				DrawTimerText(elapsed);					// Check if held above for required time
-					if (elapsed.TotalSeconds >= HeldAboveTimeSeconds)
+				// Throttle timer display updates to once per second to reduce overhead
+				int currentSecond = (int)elapsed.TotalSeconds;
+				if (currentSecond != lastTimerSecond)
+				{
+					lastTimerSecond = currentSecond;
+					DrawTimerText(elapsed);
+				}
+				
+				// Check if held above for required time
+				if (elapsed.TotalSeconds >= HeldAboveTimeSeconds)
 					{
 						// CONDITION #2 MET! Enter the trade
 						hasEnteredTrade = true;
